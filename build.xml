@@ -65,13 +65,13 @@
         description="generate the distribution" >
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
 	<mkdir dir="${dist}"/>
-	<mkdir dir="${dist}/TableauExtractRefresh"/>
-    <jar jarfile="${dist}/TableauExtractRefresh/TableauExtractRefresh.jar" basedir="${build}"/>
-	<copy file="plugin.xml" todir="${dist}/TableauExtractRefresh"/>
-	<copy file="ter.png" todir="${dist}/TableauExtractRefresh"/>
-	<copy file="LICENSE" todir="${dist}/TableauExtractRefresh"/>
-	<copy file="README.md" todir="${dist}/TableauExtractRefresh"/>
-	<echoxml file="${dist}/TableauExtractRefresh/version.xml">
+	<mkdir dir="${dist}/refreshtableauextract"/>
+    <jar jarfile="${dist}/refreshtableauextract/refreshtableauextract.jar" basedir="${build}"/>
+	<copy file="plugin.xml" todir="${dist}/refreshtableauextract"/>
+	<copy file="ter.png" todir="${dist}/refreshtableauextract"/>
+	<copy file="LICENSE" todir="${dist}/refreshtableauextract"/>
+	<copy file="README.md" todir="${dist}/refreshtableauextract"/>
+	<echoxml file="${dist}/refreshtableauextract/version.xml">
 		<version branch="${branch}" buildId="${buildnumber}">${version}</version>
 	</echoxml>
   </target>
