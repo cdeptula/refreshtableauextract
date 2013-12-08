@@ -2,7 +2,7 @@
 <plugin
    id="TableauExtractRefresh"
    iconfile="ter.png"
-   description="Tableau Extract Refresh"
+   description="Refresh Tableau Extract"
    tooltip="This job entry updates an extract on the Tableau server"
    category="Job"
    classname="org.openbi.kettle.plugins.refreshtableauextract.RefreshTableauExtract">
@@ -14,7 +14,7 @@
      <category locale="en_US">Tableau</category>
    </localized_category>
    <localized_description>
-     <description locale="en_US">Tableau Extract Refresh</description>
+     <description locale="en_US">Refresh Tableau Extract</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">This step refreshes an extract on the Tableau server.</tooltip>
