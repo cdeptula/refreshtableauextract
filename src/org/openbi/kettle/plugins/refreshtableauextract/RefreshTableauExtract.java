@@ -3,6 +3,7 @@ package org.openbi.kettle.plugins.refreshtableauextract;
 *
 * Refresh Tableau Extract plugin for Pentaho Data Integration
 *
+* Author: Chris Deptula
 * https://github.com/cdeptula/tableauexractrefresh
 *
 *******************************************************************************
@@ -58,10 +59,10 @@ import org.w3c.dom.Node;
 
 
 /**
-* Shell type of Job Entry. You can define shell scripts to be executed in a Job.
+* Refresh Tableau Extract type of Job Entry. You can refresh a Tableau extract on a Tableau server in a Job.
 * 
-* @author Matt
-* @since 01-10-2003, rewritten on 18-06-2004
+* @author Chris
+* @since 2013-12-09
 */
 public class RefreshTableauExtract extends JobEntryBase implements Cloneable, JobEntryInterface {
  private static Class<?> PKG = RefreshTableauExtract.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
