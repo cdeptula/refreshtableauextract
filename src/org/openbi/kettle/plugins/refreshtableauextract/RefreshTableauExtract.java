@@ -775,7 +775,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	     }
 		 
 	     if ( log.isDetailed() ) {
-	         logDetailed( BaseMessages.getString( PKG, "RefreshTableauExtract.CommandStarted", command.toString() ) );
+	         logDetailed( BaseMessages.getString( PKG, "RefreshTableauExtract.CommandStarted" ) );
 	       }
 		 Process proc=pb.start();
 		// any error message?
@@ -791,12 +791,12 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	     proc.waitFor();
 		     
 	     if ( log.isDetailed() ) {
-	         logDetailed( BaseMessages.getString( PKG, "RefreshTableauExtract.CommandFinished", command.toString() ) );
+	         logDetailed( BaseMessages.getString( PKG, "RefreshTableauExtract.CommandFinished" ) );
 	     }
 	     // What's the exit status?
 	     result.setExitStatus( proc.exitValue() );
 	     if ( result.getExitStatus() != 0 ) {
-	       logError( BaseMessages.getString( PKG, "RefreshTableauExtract.ExitStatus", command.toString(), ""
+	       logError( BaseMessages.getString( PKG, "RefreshTableauExtract.ExitStatus", ""
 	           + result.getExitStatus() )) ;
 	       result.setResult(false);
 	     }
