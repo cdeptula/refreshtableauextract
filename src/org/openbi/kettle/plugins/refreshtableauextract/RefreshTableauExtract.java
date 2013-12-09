@@ -48,7 +48,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.util.StreamLogger;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -57,7 +56,6 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 
@@ -118,11 +116,12 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	 refreshType=0;
 	 fullRefresh=false;
 	 protocol=0;
+	 setID(-1L);
  }
  
  public RefreshTableauExtract() {
 	 this("");
-	 clear();
+	// clear();
  }
  
  public Object clone() {
@@ -134,64 +133,66 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
     StringBuffer retval = new StringBuffer( 300 );
 
     retval.append( super.getXML() );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshType", getRefreshType() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "tableauClient", getTableauClient() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "server", getServer() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "serverPort", getServerPort() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "serverUser", getServerUser() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "serverPassword", getServerPassword() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "dataSource", getDataSource() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "extractFile", getExtractFile() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sourceUser", getSourceUser() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "sourcePassword", getSourcePassword() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxyUser", getProxyUser() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "proxyPassword", getProxyPassword() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "project", getProject() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "siteName", getSiteName() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "fullRefresh", getFullRefresh() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "protocol", getProtocol() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "workingDirectory", getWorkingDirectory() ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "processResultFiles", getProcessResultFiles() ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "refreshType", getRefreshType() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "tableauClient", getTableauClient() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "server", getServer() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "serverPort", getServerPort() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "serverUser", getServerUser() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "serverPassword", getServerPassword() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "dataSource", getDataSource() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "extractFile", getExtractFile() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "sourceUser", getSourceUser() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "sourcePassword", getSourcePassword() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "proxyUser", getProxyUser() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "proxyPassword", getProxyPassword() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "project", getProject() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "siteName", getSiteName() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "fullRefresh", getFullRefresh() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "protocol", getProtocol() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "workingDirectory", getWorkingDirectory() ) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append( "      " ).append( XMLHandler.addTagValue( "processResultFiles", getProcessResultFiles() ) ); //$NON-NLS-1$ //$NON-NLS-2$
 
-    retval.append( "      <fields>" ).append( Const.CR );
+    retval.append( "      <fields>" ).append( Const.CR ); //$NON-NLS-1$
     if ( filePaths != null ) {
       for ( int i = 0; i < filePaths.length; i++ ) {
-        retval.append( "        <field>" ).append( Const.CR );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "filePath", filePaths[i] ) );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcards[i] ) );
-        retval.append( "        </field>" ).append( Const.CR );
+        retval.append( "        <field>" ).append( Const.CR ); //$NON-NLS-1$
+        retval.append( "          " ).append( XMLHandler.addTagValue( "filePath", filePaths[i] ) ); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcards[i] ) ); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append( "        </field>" ).append( Const.CR ); //$NON-NLS-1$
       }
     }
-    retval.append( "      </fields>" ).append( Const.CR );
+    retval.append( "      </fields>" ).append( Const.CR ); //$NON-NLS-1$
 
     return retval.toString();
  }
 
- public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-	      IMetaStore metaStore ) throws KettleXMLException {
+ public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep ) throws KettleXMLException {
 	    try {
+	    	System.out.println("------------------------Started XML Load");
 	      super.loadXML( entrynode, databases, slaveServers );
-	      setRefreshType( Integer.parseInt(XMLHandler.getTagValue( entrynode, "refreshType" )) );
-	      setTableauClient( XMLHandler.getTagValue( entrynode, "tableauClient" ) );
-	      setServer( XMLHandler.getTagValue( entrynode, "server" ) );
-	      setServerPort( XMLHandler.getTagValue( entrynode, "serverPort" ) );
-	      setServerUser( XMLHandler.getTagValue( entrynode, "serverUser" ) );
-	      setServerPassword( XMLHandler.getTagValue( entrynode, "serverPassword" ) );
-	      setDataSource( XMLHandler.getTagValue( entrynode, "dataSource" ) );
-	      setExtractFile( XMLHandler.getTagValue( entrynode, "extractFile" ) );
-	      setSourceUser( XMLHandler.getTagValue( entrynode, "sourceUser" ) );
-	      setSourcePassword( XMLHandler.getTagValue( entrynode, "sourcePassword" ) );
-	      setProxyUser( XMLHandler.getTagValue( entrynode, "proxyUser" ) );
-	      setProxyPassword( XMLHandler.getTagValue( entrynode, "proxyPassword" ) );
-	      setProject( XMLHandler.getTagValue( entrynode, "project" ) );
-	      setSiteName( XMLHandler.getTagValue( entrynode, "siteName" ) );
-	      setWorkingDirectory( XMLHandler.getTagValue( entrynode, "workingDirectory" ) );
-	      setProtocol( Integer.parseInt(XMLHandler.getTagValue( entrynode, "protocol" )) );
-	      setFullRefresh( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "fullRefresh" ) ));
-	      setProcessResultFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "processResultFiles" ) )); 
+	      System.out.println("--------------------------Super XML Load");
+	      setRefreshType( Integer.parseInt(XMLHandler.getTagValue( entrynode, "refreshType" )) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setTableauClient( XMLHandler.getTagValue( entrynode, "tableauClient" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setServer( XMLHandler.getTagValue( entrynode, "server" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setServerPort( XMLHandler.getTagValue( entrynode, "serverPort" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setServerUser( XMLHandler.getTagValue( entrynode, "serverUser" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setServerPassword( XMLHandler.getTagValue( entrynode, "serverPassword" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setDataSource( XMLHandler.getTagValue( entrynode, "dataSource" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setExtractFile( XMLHandler.getTagValue( entrynode, "extractFile" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setSourceUser( XMLHandler.getTagValue( entrynode, "sourceUser" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setSourcePassword( XMLHandler.getTagValue( entrynode, "sourcePassword" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setProxyUser( XMLHandler.getTagValue( entrynode, "proxyUser" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setProxyPassword( XMLHandler.getTagValue( entrynode, "proxyPassword" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setProject( XMLHandler.getTagValue( entrynode, "project" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setSiteName( XMLHandler.getTagValue( entrynode, "siteName" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setWorkingDirectory( XMLHandler.getTagValue( entrynode, "workingDirectory" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      System.out.println("------------------------------Text loads");
+	      setProtocol( Integer.parseInt(XMLHandler.getTagValue( entrynode, "protocol" )) ); //$NON-NLS-1$ //$NON-NLS-2$
+	      setFullRefresh( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "fullRefresh" ) )); //$NON-NLS-1$ //$NON-NLS-2$
+	      setProcessResultFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "processResultFiles" ) ));  //$NON-NLS-1$ //$NON-NLS-2$
+	      System.out.println("------------------------other lo;ads");
 
-
-	      Node fields = XMLHandler.getSubNode( entrynode, "fields" );
+	      Node fields = XMLHandler.getSubNode( entrynode, "fields" ); //$NON-NLS-1$
 
 	      // How many field arguments?
 	      int nrFields = XMLHandler.countNodes( fields, "field" );
@@ -200,41 +201,41 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 
 	      // Read them all...
 	      for ( int i = 0; i < nrFields; i++ ) {
-	        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+	        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i ); //$NON-NLS-1$
 
-	        filePaths[i] = XMLHandler.getTagValue( fnode, "filePath" );
-	        wildcards[i] = XMLHandler.getTagValue( fnode, "wildcard" );
+	        filePaths[i] = XMLHandler.getTagValue( fnode, "filePath" ); //$NON-NLS-1$ //$NON-NLS-2$
+	        wildcards[i] = XMLHandler.getTagValue( fnode, "wildcard" ); //$NON-NLS-1$ //$NON-NLS-2$
 	      }
+	      System.out.println("---------------fileloads");
 	    }
 
 	    catch ( KettleXMLException dbe ) {
-
 	    	throw new KettleXMLException( BaseMessages.getString( PKG, "JobRefreshTableauExtract.Error.Exception.UnableLoadXML" ), dbe );
 	    }
 	  }
 
  // Load the jobentry from repository
- public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+ public void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
       List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      setRefreshType( (int)rep.getJobEntryAttributeInteger( id_jobentry, "refreshType" ) );
-      setTableauClient( rep.getJobEntryAttributeString( id_jobentry, "tableauClient" ) );
-      setServer( rep.getJobEntryAttributeString( id_jobentry, "server" ) );
-      setServerPort( rep.getJobEntryAttributeString( id_jobentry, "serverPort" ) );
-      setServerUser( rep.getJobEntryAttributeString( id_jobentry, "serverUser" ) );
-      setServerPassword( rep.getJobEntryAttributeString( id_jobentry, "serverPassword" ) );
-      setDataSource( rep.getJobEntryAttributeString( id_jobentry, "dataSource" ) );
-      setExtractFile( rep.getJobEntryAttributeString( id_jobentry, "extractFile" ) );
-      setSourceUser( rep.getJobEntryAttributeString( id_jobentry, "sourceUser" ) );
-      setSourcePassword( rep.getJobEntryAttributeString( id_jobentry, "sourcePassword" ) );
-      setProxyUser( rep.getJobEntryAttributeString( id_jobentry, "proxyUser" ) );
-      setProxyPassword( rep.getJobEntryAttributeString( id_jobentry, "proxyPassword" ) );
-      setProject( rep.getJobEntryAttributeString( id_jobentry, "project" ) );
-      setSiteName( rep.getJobEntryAttributeString( id_jobentry, "siteName" ) );
-      setWorkingDirectory( rep.getJobEntryAttributeString( id_jobentry, "workingDirectory" ) );
-      setProtocol( Integer.parseInt(rep.getJobEntryAttributeString( id_jobentry, "protocol" )) );
-      setFullRefresh( rep.getJobEntryAttributeBoolean( id_jobentry, "fullRefresh" ) );
-      setProcessResultFiles( rep.getJobEntryAttributeBoolean( id_jobentry, "processResultFiles" ) );
+      setRefreshType( (int)rep.getJobEntryAttributeInteger( id_jobentry, "refreshType" ) ); //$NON-NLS-1$
+      setTableauClient( rep.getJobEntryAttributeString( id_jobentry, "tableauClient" ) ); //$NON-NLS-1$
+      setServer( rep.getJobEntryAttributeString( id_jobentry, "server" ) ); //$NON-NLS-1$
+      setServerPort( rep.getJobEntryAttributeString( id_jobentry, "serverPort" ) ); //$NON-NLS-1$
+      setServerUser( rep.getJobEntryAttributeString( id_jobentry, "serverUser" ) ); //$NON-NLS-1$
+      setServerPassword( rep.getJobEntryAttributeString( id_jobentry, "serverPassword" ) ); //$NON-NLS-1$
+      setDataSource( rep.getJobEntryAttributeString( id_jobentry, "dataSource" ) ); //$NON-NLS-1$
+      setExtractFile( rep.getJobEntryAttributeString( id_jobentry, "extractFile" ) ); //$NON-NLS-1$
+      setSourceUser( rep.getJobEntryAttributeString( id_jobentry, "sourceUser" ) ); //$NON-NLS-1$
+      setSourcePassword( rep.getJobEntryAttributeString( id_jobentry, "sourcePassword" ) ); //$NON-NLS-1$
+      setProxyUser( rep.getJobEntryAttributeString( id_jobentry, "proxyUser" ) ); //$NON-NLS-1$
+      setProxyPassword( rep.getJobEntryAttributeString( id_jobentry, "proxyPassword" ) ); //$NON-NLS-1$
+      setProject( rep.getJobEntryAttributeString( id_jobentry, "project" ) ); //$NON-NLS-1$
+      setSiteName( rep.getJobEntryAttributeString( id_jobentry, "siteName" ) ); //$NON-NLS-1$
+      setWorkingDirectory( rep.getJobEntryAttributeString( id_jobentry, "workingDirectory" ) ); //$NON-NLS-1$
+      setProtocol( Integer.parseInt(rep.getJobEntryAttributeString( id_jobentry, "protocol" )) ); //$NON-NLS-1$
+      setFullRefresh( rep.getJobEntryAttributeBoolean( id_jobentry, "fullRefresh" ) ); //$NON-NLS-1$
+      setProcessResultFiles( rep.getJobEntryAttributeBoolean( id_jobentry, "processResultFiles" ) ); //$NON-NLS-1$
 
 
       // How many arguments?
@@ -244,8 +245,8 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
-        filePaths[a] = rep.getJobEntryAttributeString( id_jobentry, a, "filePath" );
-        wildcards[a] = rep.getJobEntryAttributeString( id_jobentry, a, "wildcard" );
+        filePaths[a] = rep.getJobEntryAttributeString( id_jobentry, a, "filePath" ); //$NON-NLS-1$
+        wildcards[a] = rep.getJobEntryAttributeString( id_jobentry, a, "wildcard" ); //$NON-NLS-1$
       }
     } catch ( KettleException dbe ) {
 
@@ -256,33 +257,33 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 
  // Save the attributes of this job entry
  //
- public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
+ public void saveRep( Repository rep, ObjectId id_job ) throws KettleException {
    try {
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshType", getRefreshType() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "tableauClient", getTableauClient() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "server", getServer() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "serverPort", getServerPort() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "serverUser", getServerUser() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "serverPassword", getServerPassword() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "dataSource", getDataSource() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "project", getProject() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "extractFile", getExtractFile() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "sourceUser", getSourceUser() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "sourcePassword", getSourcePassword() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyUser", getProxyUser() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPassword", getProxyPassword() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "siteName", getSiteName() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", getProtocol() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "fullRefresh", getFullRefresh() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "processResultFiles", getProcessResultFiles() );
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "workingDirectory", getWorkingDirectory() );
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshType", getRefreshType() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "tableauClient", getTableauClient() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "server", getServer() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "serverPort", getServerPort() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "serverUser", getServerUser() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "serverPassword", getServerPassword() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "dataSource", getDataSource() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "project", getProject() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "extractFile", getExtractFile() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "sourceUser", getSourceUser() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "sourcePassword", getSourcePassword() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyUser", getProxyUser() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPassword", getProxyPassword() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "siteName", getSiteName() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", getProtocol() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "fullRefresh", getFullRefresh() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "processResultFiles", getProcessResultFiles() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "workingDirectory", getWorkingDirectory() ); //$NON-NLS-1$
 
 
      // save the filepaths...
      if ( filePaths != null ) {
          for ( int i = 0; i < filePaths.length; i++ ) {
-           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "filePath", filePaths[i] );
-           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "wildcard", wildcards[i] );
+           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "filePath", filePaths[i] ); //$NON-NLS-1$
+           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "wildcard", wildcards[i] ); //$NON-NLS-1$
          }
        }
    } catch ( KettleDatabaseException dbe ) {
@@ -838,8 +839,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
  }
 
  @Override
- public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-     IMetaStore metaStore ) {
+ public void check( List<CheckResultInterface> remarks, JobMeta jobMeta ) {
    andValidator().validate( this, "tableauClient", remarks, putValidators( notBlankValidator(),fileExistsValidator() ) );
    andValidator().validate(this, "server", remarks, putValidators(notBlankValidator()));
    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator()));

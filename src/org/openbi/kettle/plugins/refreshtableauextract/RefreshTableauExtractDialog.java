@@ -1200,22 +1200,27 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
 	  }
   }
 
+  public String nullToEmpty(String n)
+  {
+	  return n!=null ? n : "";
+  }
+  
   public void getData() {
-    wName.setText( Const.nullToEmpty( jobEntry.getName() ) );
-    wTableauClient.setText( Const.nullToEmpty( jobEntry.getTableauClient() ) );
-    wServer.setText( Const.nullToEmpty( jobEntry.getServer() ) );
-    wServerPort.setText(Const.nullToEmpty(jobEntry.getServerPort()));
-    wServerUser.setText(Const.nullToEmpty(jobEntry.getServerUser()));
-    wServerPassword.setText(Const.nullToEmpty(jobEntry.getServerPassword()));
-    wDataSource.setText(Const.nullToEmpty(jobEntry.getDataSource()));
-    wProject.setText(Const.nullToEmpty(jobEntry.getProject()));
-    wExtractFile.setText(Const.nullToEmpty(jobEntry.getExtractFile()));
-    wSourceUser.setText(Const.nullToEmpty(jobEntry.getSourceUser()));
-    wSourcePassword.setText(Const.nullToEmpty(jobEntry.getSourcePassword()));
-    wProxyUser.setText(Const.nullToEmpty(jobEntry.getProxyUser()));
-    wProxyPassword.setText(Const.nullToEmpty(jobEntry.getProxyPassword()));
-    wSiteName.setText(Const.nullToEmpty(jobEntry.getSiteName()));
-    wWorkingDirectory.setText(Const.nullToEmpty(jobEntry.getWorkingDirectory()));
+    wName.setText( nullToEmpty(jobEntry.getName() )) ;
+    wTableauClient.setText( nullToEmpty(jobEntry.getTableauClient() )) ;
+    wServer.setText( nullToEmpty(jobEntry.getServer() )) ;
+    wServerPort.setText(nullToEmpty(jobEntry.getServerPort()));
+    wServerUser.setText(nullToEmpty(jobEntry.getServerUser()));
+    wServerPassword.setText(nullToEmpty(jobEntry.getServerPassword()));
+    wDataSource.setText(nullToEmpty(jobEntry.getDataSource()));
+    wProject.setText(nullToEmpty(jobEntry.getProject()));
+    wExtractFile.setText(nullToEmpty(jobEntry.getExtractFile()));
+    wSourceUser.setText(nullToEmpty(jobEntry.getSourceUser()));
+    wSourcePassword.setText(nullToEmpty(jobEntry.getSourcePassword()));
+    wProxyUser.setText(nullToEmpty(jobEntry.getProxyUser()));
+    wProxyPassword.setText(nullToEmpty(jobEntry.getProxyPassword()));
+    wSiteName.setText(nullToEmpty(jobEntry.getSiteName()));
+    wWorkingDirectory.setText(nullToEmpty(jobEntry.getWorkingDirectory()));
    	wRefreshType.select(jobEntry.getRefreshType());
    	wProtocol.select(jobEntry.getProtocol());
    	wFullRefresh.setSelection(jobEntry.getFullRefresh());
@@ -1225,8 +1230,8 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
       for ( int i = 0; i < jobEntry.filePaths.length; i++ ) {
         TableItem ti = wFiles.table.getItem( i );
         if ( jobEntry.filePaths[i] != null ) {
-          ti.setText( 1, jobEntry.filePaths[i] );
-          ti.setText(2,Const.nullToEmpty(jobEntry.wildcards[i]));
+          ti.setText( 1, nullToEmpty(jobEntry.filePaths[i] ));
+          ti.setText(2,nullToEmpty(jobEntry.wildcards[i]));
         }
       }
       wFiles.setRowNums();

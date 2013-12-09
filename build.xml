@@ -46,7 +46,7 @@
         description="compile the source " >
 	
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac debug="on" debuglevel="lines" srcdir="${src}" destdir="${build}" includeantruntime="false">
+    <javac debug="on" srcdir="${src}" destdir="${build}" includeantruntime="false" target="1.6" source="1.6">
 		<classpath>
 			<fileset dir="${pentahoclasspath}/" >
 				<include name="**/*.jar"/>
