@@ -666,7 +666,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 			        	{
 			        		if(o.exists())
 			        		{
-			        			files.add(o.getName().toString());
+			        			files.add(o.getName().toString().startsWith("file:///") ? o.getName().toString().substring(8) : o.getName().toString());
 			        		} else {
 			        			logBasic(BaseMessages.getString( PKG, "RefreshTableauExtract.FileNotExist", "" + o.getName() ));
 			        		}
