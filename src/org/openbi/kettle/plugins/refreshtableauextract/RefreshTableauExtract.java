@@ -30,14 +30,18 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,7 +59,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
 
 
 /**
@@ -107,6 +110,8 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
  
  private int protocol;
  
+ private boolean processResultFiles;
+ 
  public RefreshTableauExtract(String name) {
 	 super( name, "");
 	 tableauClient="tableau";
@@ -146,6 +151,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
     retval.append( "      " ).append( XMLHandler.addTagValue( "fullRefresh", getFullRefresh() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protocol", getProtocol() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "workingDirectory", getWorkingDirectory() ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "processResultFiles", getProcessResultFiles() ) );
 
     retval.append( "      <fields>" ).append( Const.CR );
     if ( filePaths != null ) {
@@ -181,7 +187,8 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	      setSiteName( XMLHandler.getTagValue( entrynode, "siteName" ) );
 	      setWorkingDirectory( XMLHandler.getTagValue( entrynode, "workingDirectory" ) );
 	      setProtocol( Integer.parseInt(XMLHandler.getTagValue( entrynode, "protocol" )) );
-	      setFullRefresh( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "fullRefresh" ) )); 
+	      setFullRefresh( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "fullRefresh" ) ));
+	      setProcessResultFiles( "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "processResultFiles" ) )); 
 
 
 	      Node fields = XMLHandler.getSubNode( entrynode, "fields" );
@@ -227,6 +234,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
       setWorkingDirectory( rep.getJobEntryAttributeString( id_jobentry, "workingDirectory" ) );
       setProtocol( Integer.parseInt(rep.getJobEntryAttributeString( id_jobentry, "protocol" )) );
       setFullRefresh( rep.getJobEntryAttributeBoolean( id_jobentry, "fullRefresh" ) );
+      setProcessResultFiles( rep.getJobEntryAttributeBoolean( id_jobentry, "processResultFiles" ) );
 
 
       // How many arguments?
@@ -266,6 +274,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
      rep.saveJobEntryAttribute( id_job, getObjectId(), "siteName", getSiteName() );
      rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", getProtocol() );
      rep.saveJobEntryAttribute( id_job, getObjectId(), "fullRefresh", getFullRefresh() );
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "processResultFiles", getProcessResultFiles() );
      rep.saveJobEntryAttribute( id_job, getObjectId(), "workingDirectory", getWorkingDirectory() );
 
 
@@ -454,6 +463,21 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	 fullRefresh=Boolean.getBoolean(n);
  }
  
+ public void setProcessResultFiles(boolean n)
+ {
+	 processResultFiles=n;
+ }
+ 
+ public boolean getProcessResultFiles()
+ {
+	 return processResultFiles;
+ }
+ 
+ public void setProcessResultFiles(String n)
+ {
+	 processResultFiles=Boolean.getBoolean(n);
+ }
+ 
  public int getProtocol()
  {
 	 return protocol;
@@ -544,8 +568,8 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	    return tempFile;
 	  }
  
- public Result execute( Result result, int nr ) throws KettleException {
-	 
+ public Result execute( Result previousResult, int nr ) throws KettleException {
+	 Result result=previousResult;
 	 result.setResult(validate());
 	 if(!result.getResult())
 	 {
@@ -619,18 +643,78 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 		 }
 		 commands[0]=new String(tableauCommand);
 	 } else {
-	      // Get source and destination files, also wildcard
-	      String[] vFilePaths = filePaths;
-	      String[] vWildcards = wildcards;
-	      boolean[] includeSubfolders=new boolean[vFilePaths.length];
-	      String[] fileRequired=new String[vFilePaths.length];
-	      
-	      for (int i=0;i<includeSubfolders.length;i++)
-	      {
-	    	  includeSubfolders[i]=false;
-	      }
-	      FileInputList files=FileInputList.createFileList(this,vFilePaths,vWildcards,fileRequired,includeSubfolders);
-	      String[] fileStrings=files.getFileStrings();
+		 String[] fileStrings = null;
+		 if(processResultFiles)
+		 {
+			 if(result!=null && previousResult.getResultFiles().size()>0)
+			 {
+				
+				int size = previousResult.getResultFiles().size();
+		        if ( log.isBasic() ) {
+		          logBasic( BaseMessages.getString( PKG, "RefreshTableauExtract.FilesFound", "" + size ) );
+		        }
+		        try
+		        {
+			        List<ResultFile> resultFiles=previousResult.getResultFilesList();
+			        List<String> files=new ArrayList<String>();
+			        Iterator<ResultFile> it = resultFiles.iterator();
+			        while(it.hasNext())
+			        {
+			        	ResultFile f=it.next();
+			        	FileObject o=f.getFile();
+			        	if(o.getType().equals(FileType.FILE))
+			        	{
+			        		if(o.exists())
+			        		{
+			        			files.add(o.getName().toString());
+			        		} else {
+			        			logBasic(BaseMessages.getString( PKG, "RefreshTableauExtract.FileNotExist", "" + o.getName() ));
+			        		}
+			        	} else {
+			        		logBasic(BaseMessages.getString( PKG, "RefreshTableauExtract.ResultNotFile", "" + o.getName() ));
+			        	}
+			        }
+			        if(files.size()>0)
+			        {
+			        	Iterator<String> ite = files.iterator();
+			        	fileStrings=new String[files.size()];
+			        	int i=0;
+			        	while (ite.hasNext())
+			        	{
+			        		fileStrings[i]=ite.next();
+			        		i++;
+			        	}
+			        	
+			        } else {
+			        	logBasic(BaseMessages.getString(PKG,"RefreshTableauExtract.NoFilesOnResult"));
+						 result.setResult(true);
+						 return result;
+			        }
+		        } catch (Exception ex) {
+		        	logError(ex.toString());
+		        	result.setResult(false);
+		        	return result;
+		        }
+			 } else {
+				 logBasic(BaseMessages.getString(PKG,"RefreshTableauExtract.NoFilesOnResult"));
+				 result.setResult(true);
+				 return result;
+			 }
+		 } else {
+		      // Get source and destination files, also wildcard
+		      String[] vFilePaths = filePaths;
+		      String[] vWildcards = wildcards;
+		      boolean[] includeSubfolders=new boolean[vFilePaths.length];
+		      String[] fileRequired=new String[vFilePaths.length];
+		      
+		      for (int i=0;i<includeSubfolders.length;i++)
+		      {
+		    	  includeSubfolders[i]=false;
+		      }
+		      FileInputList files=FileInputList.createFileList(this,vFilePaths,vWildcards,fileRequired,includeSubfolders);
+		      fileStrings=new String[files.getFileStrings().length];
+		      fileStrings=files.getFileStrings();
+		 }
 	      commands=new String[fileStrings.length];
 	      for(int i=0;i<fileStrings.length;i++)
 	      {
@@ -712,7 +796,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	     // What's the exit status?
 	     result.setExitStatus( proc.exitValue() );
 	     if ( result.getExitStatus() != 0 ) {
-	       logBasic( BaseMessages.getString( PKG, "RefreshTableauExtract.ExitStatus", environmentSubstitute( getFilename() ), ""
+	       logError( BaseMessages.getString( PKG, "RefreshTableauExtract.ExitStatus", command.toString(), ""
 	           + result.getExitStatus() )) ;
 	       result.setResult(false);
 	     }

@@ -244,6 +244,11 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
   
   private FormData fdlWorkingDirectory, fdbWorkingDirectory, fdWorkingDirectory;
   
+  private Label wlResultFiles;
+  
+  private Button wResultFiles;
+  
+  private FormData fdlResultFiles, fdResultFiles;
 
   public RefreshTableauExtractDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
@@ -705,6 +710,31 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
     wAddFiles.setLayoutData( fdAddFiles );
     
     // //////////////////////
+    // Files from result Line
+    // /////////////////////
+    wlResultFiles = new Label( wAddFiles, SWT.RIGHT );
+    wlResultFiles.setText( BaseMessages.getString( PKG, "RefreshTableauExtract.ResultFiles.Label" ) );
+    props.setLook( wlResultFiles );
+    fdlResultFiles = new FormData();
+    fdlResultFiles.left = new FormAttachment( 0, 0 );
+    fdlResultFiles.top = new FormAttachment( 0, margin );
+    fdlResultFiles.right = new FormAttachment( middle, 0 );
+    wlResultFiles.setLayoutData( fdlResultFiles );
+    wResultFiles = new Button( wAddFiles, SWT.CHECK );
+    props.setLook( wResultFiles );
+    fdResultFiles = new FormData();
+    fdResultFiles.left = new FormAttachment( middle, margin );
+    fdResultFiles.top = new FormAttachment( 0, margin );
+    fdResultFiles.right = new FormAttachment( 100, 0 );
+    wResultFiles.setLayoutData( fdResultFiles );
+    
+    wResultFiles.addSelectionListener(new SelectionAdapter() {
+    	public void widgetSelected( SelectionEvent e )
+    	{
+    		updateActive();
+    	}
+    });
+    // //////////////////////
     // fILE Line
     // /////////////////////
     wlFile = new Label( wAddFiles, SWT.RIGHT );
@@ -712,7 +742,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
     props.setLook( wlFile );
     fdlFile = new FormData();
     fdlFile.left = new FormAttachment( 0, 0 );
-    fdlFile.top = new FormAttachment( 0, margin );
+    fdlFile.top = new FormAttachment( wResultFiles, margin );
     fdlFile.right = new FormAttachment( middle, 0 );
     wlFile.setLayoutData( fdlFile );
     
@@ -722,7 +752,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
     wbFileFolder.setText( BaseMessages.getString( PKG, "RefreshTableauExtract.BrowseFolders.Label" ) );
     fdbFileFolder = new FormData();
     fdbFileFolder.right = new FormAttachment( 100, 0 );
-    fdbFileFolder.top = new FormAttachment( 0, margin );
+    fdbFileFolder.top = new FormAttachment( wResultFiles, margin );
     wbFileFolder.setLayoutData( fdbFileFolder );
     
     wbFileFolder.addSelectionListener( new SelectionAdapter() {
@@ -750,7 +780,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
       wbFileFile.setText( BaseMessages.getString( PKG, "RefreshTableauExtract.BrowseFiles.Label" ) );
       fdbFileFile = new FormData();
       fdbFileFile.right = new FormAttachment( wbFileFolder, -margin );
-      fdbFileFile.top = new FormAttachment( 0, margin );
+      fdbFileFile.top = new FormAttachment( wResultFiles, margin );
       wbFileFile.setLayoutData( fdbFileFile );
 
       // Browse Source file add button ...
@@ -759,7 +789,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
       wbFileAdd.setText( BaseMessages.getString( PKG, "RefreshTableauExtract.FilenameAdd.Button" ) );
       fdbFileAdd = new FormData();
       fdbFileAdd.right = new FormAttachment( wbFileFile, -margin );
-      fdbFileAdd.top = new FormAttachment( 0, margin );
+      fdbFileAdd.top = new FormAttachment( wResultFiles, margin );
       wbFileAdd.setLayoutData( fdbFileAdd );
 
       wbFileFile.addSelectionListener( new SelectionAdapter() {
@@ -781,7 +811,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
       props.setLook( wFile );
       fdFile = new FormData();
       fdFile.left = new FormAttachment( middle, margin );
-      fdFile.top = new FormAttachment( 0, margin );
+      fdFile.top = new FormAttachment( wResultFiles, margin );
       fdFile.right = new FormAttachment( wbFileAdd, 0 );
       wFile.setLayoutData( fdFile );
       
@@ -1127,10 +1157,15 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
 	  {
 		  refreshServer=true;
 	  }
-	  boolean append=false;
+	  boolean appendFile=false;
+	  boolean appendResult=false;
 	  if(wRefreshType.getSelectionIndex()==2)
 	  {
-		  append=true;
+		  appendResult=true;
+		  if(!wResultFiles.getSelection())
+		  {
+			  appendFile=true;
+		  }
 	  }
 	  
 	  wlExtractFile.setEnabled(refresh);
@@ -1142,24 +1177,27 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
 	  wSourcePassword.setEnabled(refreshServer);
 	  wlFullRefresh.setEnabled(refreshServer);
 	  wFullRefresh.setEnabled(refreshServer);
-	  wFile.setEnabled(append);
-	  wlFile.setEnabled(append);
-	  wbFileAdd.setEnabled(append);
-	  wbFileFile.setEnabled(append);
-	  wbFileFolder.setEnabled(append);
-	  wbFileEdit.setEnabled(append);
-	  wbFileDelete.setEnabled(append);
-	  wlWildcard.setEnabled(append);
-	  wWildcard.setEnabled(append);
-	  wFiles.setEnabled(append);
-	  /*
-	   *     if ( jobEntry.setLogfile ) {
-      wLoglevel.setForeground( display.getSystemColor( SWT.COLOR_BLACK ) );
-    } else {
-      wLoglevel.setForeground( display.getSystemColor( SWT.COLOR_GRAY ) );
-    }
-    
-	   */
+	  wFile.setEnabled(appendFile);
+	  wlFile.setEnabled(appendFile);
+	  wbFileAdd.setEnabled(appendFile);
+	  wbFileFile.setEnabled(appendFile);
+	  wbFileFolder.setEnabled(appendFile);
+	  wbFileEdit.setEnabled(appendFile);
+	  wbFileDelete.setEnabled(appendFile);
+	  wlWildcard.setEnabled(appendFile);
+	  wWildcard.setEnabled(appendFile);
+	  wFiles.setEnabled(appendFile);
+	  wlFiles.setEnabled(appendFile);
+	  wFiles.table.setEnabled(appendFile);
+	  wResultFiles.setEnabled(appendResult);
+	  wlResultFiles.setEnabled(appendResult);
+	  
+	  if(appendFile)
+	  {
+		  wFiles.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+	  } else {
+		  wFiles.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
+	  }
   }
 
   public void getData() {
@@ -1181,6 +1219,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
    	wRefreshType.select(jobEntry.getRefreshType());
    	wProtocol.select(jobEntry.getProtocol());
    	wFullRefresh.setSelection(jobEntry.getFullRefresh());
+   	wResultFiles.setSelection(jobEntry.getProcessResultFiles());
 
     if ( jobEntry.filePaths != null ) {
       for ( int i = 0; i < jobEntry.filePaths.length; i++ ) {
@@ -1230,6 +1269,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
     jobEntry.setRefreshType(wRefreshType.getSelectionIndex());
     jobEntry.setProtocol(wProtocol.getSelectionIndex());
     jobEntry.setFullRefresh(wFullRefresh.getSelection());
+    jobEntry.setProcessResultFiles(wResultFiles.getSelection());
 
     int nritems = wFiles.nrNonEmpty();
     int nr = 0;
