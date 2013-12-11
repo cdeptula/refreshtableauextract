@@ -27,3 +27,7 @@ This project uses ant; however, you must manually configure your classpath befor
   3. Set pentahoswtclasspath to ${PDI_HOME}/libswt
 2. Build the plugin using "ant dist"
 3. The plugin will be in the dist directory.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdeptula/refreshtableauextract/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
