@@ -4,14 +4,14 @@
    iconfile="ter.png"
    description="Refresh Tableau Extract"
    tooltip="This job entry updates an extract on the Tableau server"
-   category="Job"
+   category="Utility"
    classname="org.openbi.kettle.plugins.refreshtableauextract.RefreshTableauExtract">
    <libraries>
     <library name="refreshtableauextract.jar"/>
    </libraries>
     
    <localized_category>
-     <category locale="en_US">Tableau</category>
+     <category locale="en_US">Utility</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">Refresh Tableau Extract</description>
