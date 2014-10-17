@@ -1,7 +1,7 @@
 Refresh Tableau Extract Plugin
 ====================
 
-A big thanks to my employer OpenBI (http://www.openbi.com) for allowing me to open source and make this plugin available.
+A big thanks to my employer Inquidia Consulting (http://www.inquidia.com) for allowing me to open source and make this plugin available.
 
 The Refresh Tableau Extract plugin allows you to refresh an extract on a Tableau server from PDI. It can perform a full refresh of any extract, update an incremental extract from a database, or append new files to an existing extract.
 

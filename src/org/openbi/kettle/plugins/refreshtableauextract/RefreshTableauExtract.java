@@ -68,7 +68,7 @@ import org.w3c.dom.Node;
 public class RefreshTableauExtract extends JobEntryBase implements Cloneable, JobEntryInterface {
  private static Class<?> PKG = RefreshTableauExtract.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
- private int refreshType;
+ private int refreshType=0;
  
  private String tableauClient;
  
@@ -106,7 +106,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
  
  private String[] protocolList=new String[]{"http","https"};
  
- private int protocol;
+ private int protocol=0;
  
  private boolean processResultFiles;
  
@@ -233,7 +233,14 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
       setProject( rep.getJobEntryAttributeString( id_jobentry, "project" ) ); //$NON-NLS-1$
       setSiteName( rep.getJobEntryAttributeString( id_jobentry, "siteName" ) ); //$NON-NLS-1$
       setWorkingDirectory( rep.getJobEntryAttributeString( id_jobentry, "workingDirectory" ) ); //$NON-NLS-1$
-      setProtocol( Integer.parseInt(rep.getJobEntryAttributeString( id_jobentry, "protocol" )) ); //$NON-NLS-1$
+      String protocol = rep.getJobEntryAttributeString( id_jobentry, "protocol" );
+      try {
+        setProtocol( Integer.parseInt( protocol ) ); //$NON-NLS-1$
+      } catch ( Exception ex )
+      {
+        logError( "Error reading protocol from repository. Setting protocol to 0." );
+        this.protocol = 0;
+      }
       setFullRefresh( rep.getJobEntryAttributeBoolean( id_jobentry, "fullRefresh" ) ); //$NON-NLS-1$
       setProcessResultFiles( rep.getJobEntryAttributeBoolean( id_jobentry, "processResultFiles" ) ); //$NON-NLS-1$
 
