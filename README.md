@@ -9,7 +9,7 @@ This plugin utilizes the Tableau command line utility detailed at http://onlineh
 
 System Requirements
 -------------------
-- Pentaho Data Integration 4.3 and above
+- Pentaho Data Integration 5.0 and above (Version 1.0 supports PDI 4.3 and above all later versions require 5.0 and above.)
 - Tableau 8.0 and above
 
 Installation
@@ -23,11 +23,8 @@ This project uses ant; however, you must manually configure your classpath befor
 
 1. Edit the build.properties file.
   1. For PDI 5.0 and up: Set pentahoclasspath to ${PDI_HOME}/lib
-  2. For PDI 4.5 and below: Set pentahoclasspath to ${PDI_HOME}/libext
-  3. Set pentahoswtclasspath to ${PDI_HOME}/libswt
+  2. Set pentahoswtclasspath to ${PDI_HOME}/libswt
 2. Build the plugin using "ant dist"
 3. The plugin will be in the dist directory.
 
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdeptula/refreshtableauextract/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

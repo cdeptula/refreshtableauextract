@@ -22,19 +22,6 @@ package org.openbi.kettle.plugins.refreshtableauextract;
 *
 ******************************************************************************/
 
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-
-import java.io.File;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
@@ -56,7 +43,21 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 
 /**
@@ -215,10 +216,16 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	  }
 
  // Load the jobentry from repository
- public void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
+ public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
       List<SlaveServer> slaveServers ) throws KettleException {
     try {
-      setRefreshType( (int)rep.getJobEntryAttributeInteger( id_jobentry, "refreshType" ) ); //$NON-NLS-1$
+      String refreshType = rep.getJobEntryAttributeString( id_jobentry, "refreshType" );
+      try {
+          setRefreshType( Integer.parseInt( refreshType ) );
+      } catch ( Exception ex )
+      {
+          logError( "Refresh Tableau Extract: Problem parsing refresh type '"+refreshType+"'.  Setting to default." );
+      }
       setTableauClient( rep.getJobEntryAttributeString( id_jobentry, "tableauClient" ) ); //$NON-NLS-1$
       setServer( rep.getJobEntryAttributeString( id_jobentry, "server" ) ); //$NON-NLS-1$
       setServerPort( rep.getJobEntryAttributeString( id_jobentry, "serverPort" ) ); //$NON-NLS-1$
@@ -235,15 +242,13 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
       setWorkingDirectory( rep.getJobEntryAttributeString( id_jobentry, "workingDirectory" ) ); //$NON-NLS-1$
       String protocol = rep.getJobEntryAttributeString( id_jobentry, "protocol" );
       try {
-        setProtocol( Integer.parseInt( protocol ) ); //$NON-NLS-1$
+          setProtocol( Integer.parseInt( protocol ) );
       } catch ( Exception ex )
       {
-        logError( "Error reading protocol from repository. Setting protocol to 0." );
-        this.protocol = 0;
+          logError( "Refresh Tableau Extract: Problem parsing protocol '"+protocol+"'. Setting to default." );
       }
       setFullRefresh( rep.getJobEntryAttributeBoolean( id_jobentry, "fullRefresh" ) ); //$NON-NLS-1$
       setProcessResultFiles( rep.getJobEntryAttributeBoolean( id_jobentry, "processResultFiles" ) ); //$NON-NLS-1$
-
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "filePaths" );
@@ -264,9 +269,9 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 
  // Save the attributes of this job entry
  //
- public void saveRep( Repository rep, ObjectId id_job ) throws KettleException {
+ public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
    try {
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshType", getRefreshType() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "refreshType", Integer.toString(getRefreshType()) ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "tableauClient", getTableauClient() ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "server", getServer() ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "serverPort", getServerPort() ); //$NON-NLS-1$
@@ -280,7 +285,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyUser", getProxyUser() ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPassword", getProxyPassword() ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "siteName", getSiteName() ); //$NON-NLS-1$
-     rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", getProtocol() ); //$NON-NLS-1$
+     rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", Integer.toString(getProtocol()) ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "fullRefresh", getFullRefresh() ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "processResultFiles", getProcessResultFiles() ); //$NON-NLS-1$
      rep.saveJobEntryAttribute( id_job, getObjectId(), "workingDirectory", getWorkingDirectory() ); //$NON-NLS-1$

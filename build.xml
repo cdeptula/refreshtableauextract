@@ -1,6 +1,6 @@
-<project name="TableauDataExtractPlugin" default="dist" basedir=".">
+<project name="RefreshTableauExtractPlugin" default="dist" basedir=".">
     <description>
-        Build the Tableau Data Extract plugin for Pentaho Data Integration.
+        Build the Refresh Tableau Extract plugin for Pentaho Data Integration.
     </description>
   <!-- set global properties for this build -->
   <property file="build.properties" />
