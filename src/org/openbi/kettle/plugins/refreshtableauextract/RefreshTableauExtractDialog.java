@@ -1257,6 +1257,7 @@ public class RefreshTableauExtractDialog extends JobEntryDialog implements JobEn
       mb.open();
       return;
     }
+    jobEntry.setName( wName.getText() );
     jobEntry.setTableauClient( wTableauClient.getText() );
     jobEntry.setServer( wServer.getText() );
     jobEntry.setServerPort( wServerPort.getText() );
