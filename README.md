@@ -10,6 +10,8 @@ This plugin utilizes the Tableau command line utility detailed at http://onlineh
 System Requirements
 -------------------
 - Pentaho Data Integration 5.0 and above (Version 1.0 supports PDI 4.3 and above all later versions require 5.0 and above.)
+  - The version available for install from the Pentaho marketplace supports Pentaho 5.0-5.3
+  - PDI 5.4 requires a special build and manual installation.  This build is available at: https://github.com/cdeptula/refreshtableauextract/releases/tag/2.0.1a
 - Tableau 8.0 and above
 
 Installation
