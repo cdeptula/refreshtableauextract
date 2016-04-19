@@ -22,8 +22,8 @@ package org.openbi.kettle.plugins.refreshtableauextract;
 *
 ******************************************************************************/
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -582,6 +582,7 @@ public class RefreshTableauExtract extends JobEntryBase implements Cloneable, Jo
 	  }
  
  public Result execute( Result previousResult, int nr ) throws KettleException {
+     
 	 Result result=previousResult;
 	 result.setResult(validate());
 	 if(!result.getResult())
