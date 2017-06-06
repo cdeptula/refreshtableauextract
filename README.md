@@ -23,10 +23,8 @@ Building from Source
 --------------------
 This project uses ant; however, you must manually configure your classpath before building.
 
-1. Edit the build.properties file.
-  1. For PDI 5.0 and up: Set pentahoclasspath to ${PDI_HOME}/lib
-  2. Set pentahoswtclasspath to ${PDI_HOME}/libswt
-2. Build the plugin using "ant dist"
+1. Edit the build.properties file and set the Java build version and Pentaho version
+2. Build the plugin using "ant resolve dist"
 3. The plugin will be in the dist directory.
 
 
