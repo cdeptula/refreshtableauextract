@@ -1,4 +1,7 @@
 /*! ******************************************************************************
+* Inquidia Consulting
+* Copyright (C) 2013-2017 by Inquidia : http://www.inquidia.com
+* ******************************************************************************
 *
 * Refresh Tableau Extract plugin for Pentaho Data Integration
 *
@@ -21,7 +24,7 @@
 *
 ******************************************************************************/
 
-package org.openbi.kettle.plugins.refreshtableauextract;
+package org.inquidia.kettle.plugins.refreshtableauextract;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;

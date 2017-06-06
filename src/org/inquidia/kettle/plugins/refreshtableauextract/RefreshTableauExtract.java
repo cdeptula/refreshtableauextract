@@ -1,6 +1,8 @@
-package org.openbi.kettle.plugins.refreshtableauextract;
+package org.inquidia.kettle.plugins.refreshtableauextract;
 /*! ******************************************************************************
-*
+* Inquidia Consulting
+* Copyright (C) 2013-2017 by Inquidia : http://www.inquidia.com
+* ******************************************************************************
 * Refresh Tableau Extract plugin for Pentaho Data Integration
 *
 * Author: Chris Deptula
@@ -29,6 +31,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -66,6 +69,12 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 * @author Chris
 * @since 2013-12-09
 */
+@JobEntry( id = "RefreshTableauExtractPlugin", image = "ter.png", name = "RefreshTableauExtract.Name",
+        description = "RefreshTableauExtract.Description",
+        categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Utility",
+        i18nPackageName = "org.inquidia.kettle.plugins.refreshtableauextract",
+        documentationUrl = "https://github.com/cdeptula/refreshtableauextract",
+        casesUrl="https://github.com/cdeptula/refreshtableauextract/issues"  )
 public class RefreshTableauExtract extends JobEntryBase implements Cloneable, JobEntryInterface {
  private static Class<?> PKG = RefreshTableauExtract.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
